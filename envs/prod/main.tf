@@ -207,5 +207,7 @@ module "vpn_gateway" {
 
   vpn_sku = "VpnGw1AZ"
 
+  zones = ["1"]
+
   tags = local.tags
 }
