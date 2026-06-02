@@ -6,6 +6,14 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    working-directory: envs/prod
+
+env:
+  TF_VAR_admin_username: ${{ secrets.TF_VAR_ADMIN_USERNAME }}
+  TF_VAR_admin_password: ${{ secrets.TF_VAR_ADMIN_PASSWORD }}
+
 jobs:
 
   validate:
@@ -15,6 +23,11 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -37,6 +50,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -46,11 +64,11 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan
 
-      - name: Upload Plan Artifact
+      - name: Upload Terraform Plan
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
-          path: tfplan
+          path: envs/prod/tfplan
 
   deploy:
     name: Deploy Production Infrastructure (Network + ADDS + VPN Gateway)
@@ -64,16 +82,22 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
         run: terraform init
 
-      - name: Download Plan Artifact
+      - name: Download Terraform Plan
         uses: actions/download-artifact@v4
         with:
           name: tfplan
+          path: envs/prod
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
@@ -90,7 +114,9 @@ jobs:
           echo "Motwane Production Deployment"
           echo "===================================="
           echo "✓ Virtual Network Provisioned"
-          echo "✓ Public, Private and AD Subnets Created"
+          echo "✓ Public Subnet Created"
+          echo "✓ Private Subnet Created"
+          echo "✓ ADDS Subnet Created"
           echo "✓ GatewaySubnet Created"
           echo "✓ Active Directory Domain Services Installed"
           echo "✓ VNet DNS Updated"
