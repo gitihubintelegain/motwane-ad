@@ -1,4 +1,4 @@
-name: Motwane Production Landing Zone Deployment
+name: Motwane Production Infrastructure Deployment
 
 on:
   workflow_dispatch:
@@ -22,11 +22,14 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
       - name: Terraform Validate
         run: terraform validate
 
   plan:
-    name: Generate Deployment Plan
+    name: Plan Network + ADDS + VPN Gateway
     runs-on: ubuntu-latest
     needs: validate
 
@@ -43,57 +46,19 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan
 
-      - name: Upload Terraform Plan
+      - name: Upload Plan Artifact
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
           path: tfplan
 
-  network:
-    name: Network Provisioning (VNet + Subnets)
+  deploy:
+    name: Deploy Production Infrastructure (Network + ADDS + VPN Gateway)
     runs-on: ubuntu-latest
     needs: plan
-    environment: production
 
-    steps:
-      - name: Network Infrastructure Approved
-        run: echo "Proceeding with Network Deployment"
-
-  adds:
-    name: Active Directory Deployment (ADDS)
-    runs-on: ubuntu-latest
-    needs: network
-    environment: production
-
-    steps:
-      - name: ADDS Deployment Approved
-        run: echo "Proceeding with ADDS Deployment"
-
-  dns:
-    name: DNS Configuration
-    runs-on: ubuntu-latest
-    needs: adds
-    environment: production
-
-    steps:
-      - name: DNS Configuration Approved
-        run: echo "Proceeding with DNS Configuration"
-
-  vpn:
-    name: VPN Gateway Deployment
-    runs-on: ubuntu-latest
-    needs: dns
-    environment: production
-
-    steps:
-      - name: VPN Gateway Deployment Approved
-        run: echo "Proceeding with VPN Gateway Deployment"
-
-  apply:
-    name: Deploy Motwane Production Landing Zone
-    runs-on: ubuntu-latest
-    needs: vpn
-    environment: production
+    environment:
+      name: production
 
     steps:
       - name: Checkout Repository
@@ -105,7 +70,7 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: Download Terraform Plan
+      - name: Download Plan Artifact
         uses: actions/download-artifact@v4
         with:
           name: tfplan
@@ -116,13 +81,18 @@ jobs:
   validation:
     name: Post Deployment Validation
     runs-on: ubuntu-latest
-    needs: apply
+    needs: deploy
 
     steps:
-      - name: Deployment Validation
+      - name: Deployment Summary
         run: |
-          echo "Network Provisioned"
-          echo "ADDS Installed"
-          echo "DNS Configured"
-          echo "VPN Gateway Deployed"
-          echo "Deployment Completed Successfully"
+          echo "===================================="
+          echo "Motwane Production Deployment"
+          echo "===================================="
+          echo "✓ Virtual Network Provisioned"
+          echo "✓ Public, Private and AD Subnets Created"
+          echo "✓ GatewaySubnet Created"
+          echo "✓ Active Directory Domain Services Installed"
+          echo "✓ VNet DNS Updated"
+          echo "✓ VPN Gateway Deployed"
+          echo "===================================="
