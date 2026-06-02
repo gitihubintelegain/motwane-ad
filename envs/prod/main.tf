@@ -152,7 +152,7 @@ module "adds" {
   vm_name       = "${local.prefix}-dc-01"
   computer_name = "dc01"
 
-  vm_size = "Standard_B2ms"
+  vm_size = "Standard_D4a_v4"
 
   ########################################
   # Credentials
