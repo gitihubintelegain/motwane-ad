@@ -195,12 +195,17 @@ resource "azurerm_virtual_network_dns_servers" "dns" {
 
 module "vpn_gateway" {
 
-  source = "git::https://github.com/darshanthenge03-cloud/terraform-azure-modules.git//vpn-gateway"
+  source = "git::https://github.com/darshanthenge03-cloud/terraform-azure-modules.git//vpngateway"
 
   resource_group_name = azurerm_resource_group.network.name
   location            = local.location
 
   gateway_subnet_id = module.network.subnet_ids["GatewaySubnet"]
 
+  public_ip_name   = "${local.prefix}-pip-vpngw"
+  vpn_gateway_name = "${local.prefix}-vpngw"
+
   vpn_sku = "VpnGw1AZ"
+
+  tags = local.tags
 }
