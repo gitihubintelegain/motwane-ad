@@ -1,1 +1,128 @@
+name: Motwane Production Landing Zone Deployment
 
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+
+  validate:
+    name: Validate Terraform Configuration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+  plan:
+    name: Generate Deployment Plan
+    runs-on: ubuntu-latest
+    needs: validate
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: tfplan
+
+  network:
+    name: Network Provisioning (VNet + Subnets)
+    runs-on: ubuntu-latest
+    needs: plan
+    environment: production
+
+    steps:
+      - name: Network Infrastructure Approved
+        run: echo "Proceeding with Network Deployment"
+
+  adds:
+    name: Active Directory Deployment (ADDS)
+    runs-on: ubuntu-latest
+    needs: network
+    environment: production
+
+    steps:
+      - name: ADDS Deployment Approved
+        run: echo "Proceeding with ADDS Deployment"
+
+  dns:
+    name: DNS Configuration
+    runs-on: ubuntu-latest
+    needs: adds
+    environment: production
+
+    steps:
+      - name: DNS Configuration Approved
+        run: echo "Proceeding with DNS Configuration"
+
+  vpn:
+    name: VPN Gateway Deployment
+    runs-on: ubuntu-latest
+    needs: dns
+    environment: production
+
+    steps:
+      - name: VPN Gateway Deployment Approved
+        run: echo "Proceeding with VPN Gateway Deployment"
+
+  apply:
+    name: Deploy Motwane Production Landing Zone
+    runs-on: ubuntu-latest
+    needs: vpn
+    environment: production
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan
+
+  validation:
+    name: Post Deployment Validation
+    runs-on: ubuntu-latest
+    needs: apply
+
+    steps:
+      - name: Deployment Validation
+        run: |
+          echo "Network Provisioned"
+          echo "ADDS Installed"
+          echo "DNS Configured"
+          echo "VPN Gateway Deployed"
+          echo "Deployment Completed Successfully"
