@@ -44,7 +44,7 @@ The deployment includes:
 
 ## Architecture
 
-> Store your architecture image under `/assets/architecture.png`
+> architecture image under `/assets/architecture.png`
 
 ![Architecture](./assets/architecture.png)
 
@@ -143,7 +143,7 @@ Azure Virtual Network
 
 ## CI/CD Pipeline
 
-> Store your pipeline diagram under `/assets/pipeline.png`
+> pipeline diagram under `/assets/pipeline.png`
 
 ![Pipeline](./assets/pipeline.png)
 
