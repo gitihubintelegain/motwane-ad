@@ -1,133 +1,125 @@
 <div align="center">
 
-# 🚀 Motwane Production Azure Landing Zone
+# Motwane Production Landing Zone
 
-### Enterprise Azure Infrastructure Platform powered by Terraform & GitHub Actions
+Production-ready Azure Infrastructure Platform built using Terraform reusable modules and GitHub Actions.
+
+<br>
 
 <p align="center">
 
-<img src="https://img.shields.io/badge/Azure-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white" />
-
-<img src="https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white" />
-
-<img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" />
-
-<img src="https://img.shields.io/badge/Windows_Server-0078D6?style=for-the-badge&logo=windows&logoColor=white" />
-
-<img src="https://img.shields.io/badge/Active_Directory-003366?style=for-the-badge" />
+<img src="https://skillicons.dev/icons?i=terraform,github,azure,powershell"/>
 
 </p>
 
----
+<p align="center">
 
-Production Infrastructure as Code (IaC) implementation for Motwane Manufacturing.
+<img src="https://img.shields.io/badge/Environment-Production-success?style=flat-square" />
+
+<img src="https://img.shields.io/badge/Region-Central_India-blue?style=flat-square" />
+
+<img src="https://img.shields.io/badge/IaC-Terraform-purple?style=flat-square" />
+
+<img src="https://img.shields.io/badge/CI/CD-GitHub_Actions-black?style=flat-square" />
+
+</p>
 
 </div>
 
 ---
 
-# 📊 Project Status
+# Overview
 
-| Component                   | Status      |
-| --------------------------- | ----------- |
-| Terraform Reusable Modules  | ✅ Completed |
-| Virtual Network Deployment  | ✅ Completed |
-| Active Directory Deployment | ✅ Completed |
-| DNS Configuration           | ✅ Completed |
-| VPN Gateway Deployment      | ✅ Completed |
-| GitHub Actions CI/CD        | ✅ Completed |
-| Production Rollout          | ✅ Completed |
+This repository contains the Infrastructure as Code (IaC) implementation for the Motwane Production Landing Zone in Microsoft Azure.
+
+The platform has been designed to provide a standardized, scalable and repeatable deployment model using reusable Terraform modules and GitHub Actions CI/CD pipelines.
+
+The deployment provisions core networking, identity and connectivity services required for production workloads.
 
 ---
 
-# 🏢 Project Information
+# Architecture
 
-| Property               | Value                   |
-| ---------------------- | ----------------------- |
-| Customer               | Motwane Manufacturing   |
-| Environment            | Production              |
-| Azure Region           | Central India           |
-| Deployment Method      | GitHub Actions          |
-| Infrastructure as Code | Terraform               |
-| VPN SKU                | VpnGw1AZ                |
-| Authentication         | Azure Service Principal |
-| State Backend          | Azure Storage Account   |
+```mermaid
+flowchart LR
 
----
+A[GitHub Repository]
+--> B[GitHub Actions]
 
-# 🏗️ Solution Architecture
+B --> C[Terraform]
 
-```text
-                                        ┌──────────────────────────┐
-                                        │    GitHub Repository     │
-                                        └─────────────┬────────────┘
-                                                      │
-                                                      ▼
+C --> D[Azure Subscription]
 
-                                        ┌──────────────────────────┐
-                                        │   GitHub Actions CI/CD   │
-                                        └─────────────┬────────────┘
-                                                      │
-                                                      ▼
+D --> E[Resource Group - Network]
+D --> F[Resource Group - Infrastructure]
 
-                                        ┌──────────────────────────┐
-                                        │       Terraform          │
-                                        └─────────────┬────────────┘
-                                                      │
-                                                      ▼
+E --> G[Virtual Network]
 
-═══════════════════════════════════════════════════════════════════════
-                    MICROSOFT AZURE - CENTRAL INDIA
-═══════════════════════════════════════════════════════════════════════
+G --> H[Public Subnet]
+G --> I[Private Subnet]
+G --> J[ADDS Subnet]
+G --> K[GatewaySubnet]
 
-                            ┌───────────────────────┐
-                            │  Azure VPN Gateway    │
-                            │      VpnGw1AZ         │
-                            └───────────┬───────────┘
-                                        │
-                                 Site-to-Site VPN
-                                        │
-                                        ▼
+J --> L[Domain Controller]
 
-                            ┌───────────────────────┐
-                            │   On-Prem Firewall    │
-                            │ FortiGate / Palo Alto │
-                            │ Sophos / Cisco ASA    │
-                            └───────────────────────┘
+K --> M[Azure VPN Gateway]
 
-
-┌───────────────────────────────────────────────────────────────────┐
-│ Azure Virtual Network                                             │
-│ 172.20.0.0/22                                                     │
-└───────────────────────────────────────────────────────────────────┘
-
-     │
-     ├── Public Subnet          172.20.0.0/24
-     │
-     ├── Private Subnet         172.20.1.0/24
-     │
-     ├── ADDS Subnet            172.20.2.0/24
-     │          │
-     │          ▼
-     │     Domain Controller
-     │     Active Directory
-     │     DNS Server
-     │
-     └── GatewaySubnet          172.20.3.0/26
+N[On-Prem Firewall]
+<--> M
 ```
 
 ---
 
-# 🌐 Network Design
+# Deployment Architecture
 
-## Virtual Network
+```mermaid
+flowchart TB
 
-| Property      | Value                 |
-| ------------- | --------------------- |
-| VNet Name     | motwane-prod-cin-vnet |
-| Address Space | 172.20.0.0/22         |
+A[On-Premises Network]
 
-## Subnet Layout
+A --> B[Firewall]
+
+B --> C[IPSec Tunnel]
+
+C --> D[Azure VPN Gateway]
+
+D --> E[Azure Virtual Network]
+
+E --> F[Active Directory Domain Services]
+
+F --> G[DNS Services]
+```
+
+---
+
+# Technology Stack
+
+| Layer                  | Technology                       |
+| ---------------------- | -------------------------------- |
+| Cloud Platform         | Microsoft Azure                  |
+| Infrastructure as Code | Terraform                        |
+| CI/CD                  | GitHub Actions                   |
+| Identity               | Active Directory Domain Services |
+| Connectivity           | Azure VPN Gateway                |
+| DNS                    | Active Directory Integrated DNS  |
+| Authentication         | Azure Service Principal          |
+| Source Control         | GitHub                           |
+| State Backend          | Azure Storage Account            |
+
+---
+
+# Infrastructure Components
+
+## Networking
+
+### Virtual Network
+
+| Property      | Value         |
+| ------------- | ------------- |
+| Region        | Central India |
+| Address Space | 172.20.0.0/22 |
+
+### Subnets
 
 | Subnet        | CIDR          |
 | ------------- | ------------- |
@@ -138,57 +130,36 @@ Production Infrastructure as Code (IaC) implementation for Motwane Manufacturing
 
 ---
 
-# 🔐 Active Directory Services
+## Identity Services
+
+### Active Directory Domain Services
 
 | Configuration     | Value                       |
 | ----------------- | --------------------------- |
 | Domain Controller | 1                           |
-| Domain Name       | ad.motwane.com              |
 | DNS               | Active Directory Integrated |
 | Deployment        | Automated                   |
-| Join Method       | Terraform Provisioning      |
+| Domain Join       | Automated                   |
 
 ---
 
-# 🔗 VPN Gateway Configuration
+## Connectivity
 
-| Configuration     | Value            |
-| ----------------- | ---------------- |
-| Gateway SKU       | VpnGw1AZ         |
-| VPN Type          | Route-Based      |
-| BGP               | Disabled         |
-| Active-Active     | Disabled         |
-| Availability Zone | Zone 1           |
-| Connectivity      | Site-to-Site VPN |
+### Azure VPN Gateway
 
----
-
-# ♻️ Reusable Terraform Modules
-
-This deployment leverages centralized reusable Terraform modules.
-
-## Modules Used
-
-| Module      | Purpose                      |
-| ----------- | ---------------------------- |
-| Network     | VNet, Subnets, NSGs          |
-| ADDS        | Domain Controller Deployment |
-| VPN Gateway | Azure VPN Gateway            |
-
-## Future Modules
-
-* Azure Bastion
-* Azure Backup
-* Azure Key Vault
-* Azure Monitor
-* Log Analytics Workspace
-* Azure Virtual Desktop
+| Configuration     | Value       |
+| ----------------- | ----------- |
+| SKU               | VpnGw1AZ    |
+| VPN Type          | Route-Based |
+| Active-Active     | Disabled    |
+| BGP               | Disabled    |
+| Availability Zone | Zone 1      |
 
 ---
 
-# 📐 Naming Standards
+# Naming Standards
 
-| Resource Type     | Naming Convention       |
+| Resource          | Naming Pattern          |
 | ----------------- | ----------------------- |
 | Resource Group    | client-env-region-rg-*  |
 | Virtual Network   | client-env-region-vnet  |
@@ -196,7 +167,7 @@ This deployment leverages centralized reusable Terraform modules.
 | VPN Gateway       | client-env-region-vpngw |
 | Public IP         | client-env-region-pip-* |
 
-### Examples
+### Example
 
 ```text
 motwane-prod-cin-rg-network
@@ -214,24 +185,24 @@ motwane-prod-cin-pip-vpngw
 
 ---
 
-# 🔄 CI/CD Pipeline
+# CI/CD Pipeline
 
 ```mermaid
-flowchart TD
+flowchart LR
 
 A[Terraform Validate]
 --> B[Terraform Plan]
 
 B --> C[Manual Approval]
 
-C --> D[Deploy Production Infrastructure]
+C --> D[Terraform Apply]
 
-D --> E[Post Deployment Validation]
+D --> E[Deployment Validation]
 ```
 
 ---
 
-# 📂 Repository Structure
+# Repository Structure
 
 ```text
 motwane-ad
@@ -251,21 +222,9 @@ motwane-ad
 
 ---
 
-# 🔒 Security Controls
+# Deployment
 
-* Remote Terraform State
-* GitHub Secrets Management
-* Azure Service Principal Authentication
-* Infrastructure as Code Governance
-* Network Segmentation
-* Dedicated Gateway Subnet
-* Manual Production Approval Workflow
-
----
-
-# 🚀 Deployment
-
-### GitHub Actions
+## GitHub Actions
 
 ```text
 Actions
@@ -274,7 +233,7 @@ Actions
 → Production Deployment
 ```
 
-### Terraform
+## Terraform
 
 ```bash
 terraform init
@@ -286,20 +245,18 @@ terraform apply
 
 ---
 
-# 📈 Roadmap
+# Security Controls
 
-* Azure Bastion
-* Azure Backup
-* Key Vault Integration
-* Azure Monitor
-* Log Analytics
-* VPN Connection Automation
-* Hub & Spoke Networking
-* Disaster Recovery Design
+* Remote Terraform State
+* Azure Service Principal Authentication
+* GitHub Secrets
+* Network Segmentation
+* Dedicated Gateway Subnet
+* Manual Production Approval Workflow
 
 ---
 
-# 👥 Contributors
+# Contributors
 
 | Name           | Contribution                                                                                                    |
 | -------------- | --------------------------------------------------------------------------------------------------------------- |
@@ -307,14 +264,6 @@ terraform apply
 
 ---
 
-# 📄 License
+# License
 
 Internal Use Only
-
----
-
-<div align="center">
-
-### Built using Microsoft Azure, Terraform & GitHub Actions
-
-</div>
