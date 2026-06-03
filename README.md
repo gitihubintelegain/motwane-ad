@@ -156,9 +156,6 @@ Terraform Validate
 Terraform Plan
         │
         ▼
-Manual Approval
-        │
-        ▼
 Terraform Apply
         │
         ▼
